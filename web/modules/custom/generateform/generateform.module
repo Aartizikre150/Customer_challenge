@@ -1,0 +1,52 @@
+<?php
+
+use Symfony\Component\HttpFoundation\Response;
+
+/**
+ * Implements hook_form_alter().
+ */
+function generateform_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'node_canada_customs_form') {
+    $form['actions']['submit']['#submit'][] = 'generateform_generate_pdf';
+  }
+}
+
+/**
+ * Submit handler to generate and output PDF.
+ */
+function generateform_generate_pdf(&$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  $node = $form_state->getFormObject()->getEntity();
+  $pdf_content = generateform_generate_pdf_content($node);
+
+  // Set the PDF content in the response.
+  $response = new Response($pdf_content);
+
+  // Set headers to make the browser treat the response as a PDF.
+  $response->headers->set('Content-Type', 'application/pdf');
+  $response->headers->set('Content-Disposition', 'attachment; filename="canada_customs' . $node->id() . '_pdf.pdf"');
+
+  // Send the response.
+  $response->send();
+}
+
+/**
+ * Function to generate PDF content.
+ */
+function generateform_generate_pdf_content(\Drupal\node\Entity\Node $node) {
+  // Include the TCPDF library.
+  require_once DRUPAL_ROOT . '/modules/custom/generateform/libraries/tcpdf/tcpdf.php';
+
+  // Create a new TCPDF instance.
+  $pdf = new TCPDF();
+
+  // Add a page to the PDF.
+  $pdf->AddPage();
+
+  // Add content to the PDF.
+  $pdf->writeHTML('<h1>' . $node->getTitle() . '</h1>');
+  
+  // Output the PDF content as a string.
+  return $pdf->Output('', 'S');
+}
+
+ ?>

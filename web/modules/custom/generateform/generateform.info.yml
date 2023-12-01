@@ -1,0 +1,5 @@
+type: module
+name: Generate Form
+description: Generate Form
+package: Custom
+core_version_requirement: ^10.0

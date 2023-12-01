@@ -1,0 +1,7 @@
+generateform.add_canada_customs_form:
+  path: '/add/canada_customs'
+  defaults:
+    _controller: '\Drupal\generateform\Controller\GenerateformController::customForm'
+    _title: 'Canada Customs Form'
+  requirements:
+    _permission: 'access content'
